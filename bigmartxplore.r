@@ -148,4 +148,42 @@ for (i in 1:length(array_Item_Identifier)) {#<---
   avg_item<-mean(item_weight_val,na.rm = T)
   bigm$Item_Weight[which(is.na(bigm$Item_Weight)&bigm$Item_Identifier==array_Item_Identifier[i])]<-avg_item
 }
+tapply(bigm$Item_Weight,bigm$Item_Type,mean,na.rm=T)
+tapply(bigm$Item_Weight,bigm$Outlet_Identifier,mean,na.rm=T)
+tapply(bigm$Item_Weight,bigm$Outlet_Type,mean,na.rm=T)
+tapply(bigm$Item_Weight,bigm$Item_Fat_Content,mean,na.rm=T)
+tapply(bigm$Item_Weight,bigm$Outlet_Location_Type,mean,na.rm=T)
+
+#Item_Visibility vs all 
+mean(bigm$Item_Visibility)
+tapply(bigm$Item_Visibility,bigm$Item_Type,mean,na.rm=T)
+tapply(bigm$Item_Visibility,bigm$Outlet_Identifier,mean,na.rm=T)
+tapply(bigm$Item_Visibility,bigm$Outlet_Type,mean,na.rm=T)
+tapply(bigm$Item_Visibility,bigm$Item_Fat_Content,mean,na.rm=T)
+tapply(bigm$Item_Visibility,bigm$Outlet_Location_Type,mean,na.rm=T)
+
+#Item_MRP
+mean(bigm$Item_MRP)
+tapply(bigm$Item_MRP,bigm$Item_Type,mean,na.rm=T)
+tapply(bigm$Item_MRP,bigm$Outlet_Identifier,mean,na.rm=T)
+tapply(bigm$Item_MRP,bigm$Outlet_Type,mean,na.rm=T)
+tapply(bigm$Item_MRP,bigm$Item_Fat_Content,mean,na.rm=T)
+tapply(bigm$Item_MRP,bigm$Outlet_Location_Type,mean,na.rm=T)
+
+#Item_Outlet_Sales
+mean(bigm$Item_Outlet_Sales)
+tapply(bigm$Item_Outlet_Sales,bigm$Item_Type,mean)
+tapply(bigm$Item_Outlet_Sales,bigm$Outlet_Identifier,mean)
+tapply(bigm$Item_Outlet_Sales,bigm$Outlet_Type,mean)
+tapply(bigm$Item_Outlet_Sales,bigm$Item_Fat_Content,mean)
+tapply(bigm$Item_Outlet_Sales,bigm$Outlet_Location_Type,mean)
+tapply(bigm$Item_Outlet_Sales,bigm$Item_Type,sum)
+tapply(bigm$Item_Outlet_Sales,bigm$Outlet_Identifier,sum)
+tapply(bigm$Item_Outlet_Sales,bigm$Outlet_Type,sum)
+tapply(bigm$Item_Outlet_Sales,bigm$Item_Fat_Content,sum)
+tapply(bigm$Item_Outlet_Sales,bigm$Outlet_Location_Type,sum)
+
+
+
+
 
