@@ -134,6 +134,8 @@ ifatcont_oloc<-table(bigm$Item_Fat_Content,bigm$Outlet_Location_Type)
 chisq.test(ifatcont_oloc[c(-1,-2,-4),])
 
 #Outlet_Size vs rest(independent)
+chisq.test(bigm$Outlet_Identifier,bigm$Outlet_Size)
+chisq.test(Outlet_unique$Outlet_Identifier,Outlet_unique$Outlet_Size)
 
 #Continuous-Categorical___
 #Item weight vs all
@@ -218,8 +220,19 @@ tapply(bigm$Item_Outlet_Sales,bigm$Outlet_Identifier,sum)
 tapply(bigm$Item_Outlet_Sales,bigm$Outlet_Type,sum)
 tapply(bigm$Item_Outlet_Sales,bigm$Item_Fat_Content,sum)
 tapply(bigm$Item_Outlet_Sales,bigm$Outlet_Location_Type,sum)
-f<-aov(Item_Outlet_Sales~Outlet_Location_Type,data=bigm)
+f<-aov(Item_Outlet_Sales~Item_Type,bigm)
 summary(f)
+
+#Outlet_Size vs all continuous variables
+f<-aov(Item_Weight~Outlet_Size,data=bigm)
+summary(f)
+f<-aov(Item_Visibility~Outlet_Size,data=bigm)
+summary(f)
+f<-aov(Item_MRP~Outlet_Size,data=bigm)
+summary(f)
+f<-aov(Item_Outlet_Sales~Outlet_Size,data=bigm)
+summary(f)
+
 
 
 
