@@ -1,0 +1,257 @@
+1. Objective:
+	The Big Mart firm has 1559 products across 10 stores in different cities. The goal is to predict the sales
+	of each product at a particular store
+	
+2. Data Exploration:
+	2.1 Univariate analysis	
+		2.1.1 For Continuous variables
+			1. Item_Weight
+				The average weight of the products stands around 13.5 (assuming the unit:kg)
+				The lowest weight: between 4-5 kg
+				The Maximum weight: 20-23 kg
+				Distribution: Almost Normal
+				No outliers in whisker
+			2. Item_Visibility
+				On an average the products are visible with 0.07% of total area in that store
+				The minimum: Some where around 0% - May be for small product
+				The maximum: Cannot conclude as there are many outliers.
+				Distribution: +vely skewed: Majority of items have visibility lower than the average
+			3. Item_MRP
+				Average MRP: 140-150 dollars
+				Maximum: 250-270
+				Minimum: 30-50
+				Distribution:Almost Normal
+				No outliers
+			4. Item_Outlet_Sales
+				Average sales: Some where around 2000 dollars
+				Outliers: Too many
+				Distribution: +vely skewed: Majority of items in a store have sales lower than the average.
+					
+		2.1.2 For Categorical variables
+			1. Item-Identifier: There are 1559 unique products
+			2. Item_Type:
+				Snack food, Fruit and vegetables is the most available product in the mart with 14% each
+				Frozen foods and Household with 10% availability each
+				Baking Goods, Canned, dairy with 7-8% availability each
+				Followed by Health&Hygiene(6),Soft drinks(5), Meat(5),Breads(3),Hard Drinks(2)
+				Starchy food(2), others(2), Breakfast(1), seafood(1) are least available
+			3. Outlet_Identifier: There are 10 outlets in total.
+			4. Outlet_Type
+				There are 4 outlets in total: Grocery store, supermarket 1, supermarket 2, supermarket 3.
+				Out of 10 outlets, 6 are of supermarket type 1
+				2 Outlets are grocery stores
+				Remaining 2 outlets are supermarket type 2 and 3 respectively
+			5. Outlet_Est_Year
+				2 outlets were established in 1985 - Grocery store and SM type 3
+				10 years later SMT-1 was started
+				In 1998, second Grocery store was started
+				SMT-2 was only established in 2009(the recent one)
+			6. Item_Fat_Content
+				Out of 1559 items, 1008 items are low fat items, 551 items are regular items
+			7. Outlet_size
+				In 10 outlets, 3 medium sized outlets, 3 small sized outlets, 1 high sized outlets
+				Size of 3 outlets are unknown. They are Outlet no 10, 45 and 17
+			8. Outlet_Location_Type
+				3 outlets are in tier - 1
+				3 outlets are in tier - 2
+				4 outlets are in tier - 3
+				
+	2.2 Bivariate analysis
+		2.2.1 Continuous-Continuous
+			1. Item_Weight - Item_Visibility: No significant relationship
+			2. Item_Weight - Item_MRP: It is significant, slightly +vely correlated
+			3. Item_Weight - Item_Outlet_Sales: No significant relationship
+			4. Item_Visibility - Item_MRP: No significant relationship
+			5. Item_Visibility - Item_Outlet_Sales: Significant relationship, negatively correlated, weak downhill correlation
+			6. Item_MRP - Item_Outlet_Sales: Significant relationship, positively correlated, moderate uphill correlation
+				Key take aways:
+					As the item's size increase more than 0.20, then the outlet sales fall dramatically
+					As the item's MRP increases the outlet sales increase moderately till the MRP becomes ~= 170. After that it smoothen. 
+					Item_Weight is irrelevant to Items_Outlet_Sales(Target variable)
+		2.2.2 Categorical-Categorical
+			1. Item_Identifier - Item_Type - (independent)
+			2. Item_Identifer - Outlet_Identifier - (independent)
+			3. Item-Identifier - Outlet_Type: (independent) SMT-1 has max no of products, followed by grocery store, and later by SMT-2,SMT-3 with each around 930 products.
+			4. Item-Identifier - Outlet_Est_Year: (independent) Max no of products in stores that were established in 1985
+			5. Item_Identifer - Item_Fat_Content: 2.1.2.6(independent)
+			6. Item-Identifier - Outlet_size: Contains missing values, cannot come to conclusions (independent)
+			7. Item-Identifier - Outlet_Location_Type: (independent) Tier 3 city stores has maximum no of products, followed by tier 2 and then tier 1 with 50 products difference
+			
+			
+			8. Item_Type - Outlet_Identifier: (Independent)
+			9. Item_Type - Outlet_Type: (Independent)
+			10.Item_Type - Outlet_Est_Year: (Independent)
+			11.Item_Type - Item_Fat_Content: (Dependent):Fat content is low in Household, Snack,fruits and vegetables, Health&hygiene,dairy products
+															Fat content is regular in Snack Foods,Frozen foods,Baking goods.
+			12.Item_Type - Outlet_Size(Independent)
+			13.Item_Type - Outlet_Location_Type: (Independent)
+			
+			
+			14.unique(Outlet_Identifier - Outlet_Type):(independent)2.1.2.4
+			15.unique(outlet_Identifier - Outlet_Est_Year): 2.1.2.5
+			16.Outlet_Identifier - Item_Fat_Content: (Independent)
+			17.unique(outlet_Identifier - Outlet_Size): 2.1.2.7 (Independent)
+			18.unique(outlet_Identifier - Outlet_Location_Type): 2.1.2.8
+			
+			
+			19.unique(Outlet_Type - Outlet_Est_Year): (independent)
+			20.Outlet_Type - Item_Fat_Content: (independent)
+			21.unique(Outlet_Type - Outlet_Size): (independent)
+			22.unique(Outlet_Type - Outlet_Location_Type): (independent)
+			
+			
+			23.Outlet_Est_Year - Item_Fat_Content: (independent)
+			24.unique(Outlet_Est_Year - Outlet_Size): (independent)
+			25.Outlet_Est_Year - Outlet_Location_Type: (independent)
+			
+			26.Item_Fat_Content - Outlet_Size: (independent)
+			27.Item_Fat_Content - Outlet_Location_Type: (independent)
+				
+			
+			28.Unique(Outlet Size vs Outlet_Location_Type):(independent)
+			
+		2.2.3 Continuous-Categorical
+			1. Item_weight vs Item_Identifer: 2.1.1.1
+			2. Item_Type vs Item_Weight: (Very significant/dependent) - Means - Item_Weight varies drastically based on Item_Type - Dependent
+				Groups with approximately equal average item_weight are 
+					1. Breads, hard drinks
+					2. Soft drinks, Baking Goods,Canned
+					3. Frozen foods, Meat
+					4. Fruits&Vegetable, dairy, health&Hygiene
+					5. Breakfast, seafood, 
+					6. Starchy foods, others
+			3. Item_Weight vs Outler_Identifier:(independent)
+				All the outlets have approximately equal Item_Weight
+			4. Item_Weight vs Outlet_Type:(independent)
+				1. SMT-3 and Grocery stores have very close Item_Weight
+				2. SMT-1 and SMT-2 have very close Item_Weight
+			5. Item_Weight vs Outlet_Est_Year: (independent)
+			6. Item_Weight vs Item_Fat_Content(dependent)
+				Items with low fats(Household, Fruits&Vegetable,dairy, etc) have higher average Item_Weight than regular items( Snack foods, frozen foods, baking goods)
+			7. Item_Weight vs Outlet_Size: (independent - without missing values)
+			8. Item_Weight vs Outlet_Location_Type(independent)
+			
+			
+			9. Item_Visibility vs Item_Identifer: 2.1.1.2: Majority items have visibility lower than the average
+			10.Item_Visibility vs Item_Type(Dependent)
+				Health&Health&Hygiene least space allocated - 0.055%
+				Sea food (0.074%) & dairy(0.072%) max allocated products
+			11. Item_Visibility vs Outler_Identifier(Dependent)
+				Average visibility of items is high in outlet 10 and 19 with 0.1% of total area.
+				In other outlets, average visibility is 0.06%
+			12. Item_Visibility vs Outlet_Type(Dependent)
+				Average visibility of items highest in the grocery stores with 0.1% which is store 10 and 19
+			13. Item_Visibility vs Outlet_Est_Year(dependent)
+			14. Item_Visibility vs Item_Fat_Content(dependent)
+				Average visibility of regular fat items is 0.005% higher than that of low fat items
+			15. Item_Visibility vs Outlet_Size(dependent - without missing values on both Item_Visibility and Outlet_Size)
+			16. Item_Visibility vs Outlet_Location_Type (dependent)
+				Average visibility of items of outlets in tier-1 cities is higher than tier-2 and tier3
+				
+			
+			17. Item_MRP vs Item_Identifer: 2.1.1.3(dependent)
+			18. Item_MRP vs Item_Type(dependent)
+				1. Household, dairy, starchy foods most costly items
+				2. Baking Goods, health&Hygiene least costly items
+			19. Item_MRP vs Outler_Identifier: (independent)
+			20. Item_MRP vs Outlet_Est_Year: (independent)
+			21. Item_MRP vs Item_Fat_Content: (independent)
+				Both regular and low fat items have same average MRP
+			22. Item_MRP vs Outlet_Size: (independent - without missing values)
+			23. Item_MRP vs Outlet_Location_Type: (independent)
+				All 3 tiers have almost same average MRP
+				
+			
+			24. Item_Outlet_Sales vs Item_Identifier: 2.1.1.4
+			25. Item_Outlet_Sales vs Item_Type(dependent)
+				1. Fruits and vegetables most sold, baking goods(average)
+				2. Fruits and vegetables most sold, starchy foods, others
+			26. Item_Outlet_Sales vs Outler_Identifier(dependent)
+				1. Sales high in outlet no 27, sales lowest in 10 and 19 which are grocery stores(average)
+				2. Sales highest in SMT-1 lowest in Grocery
+			27. Item_Outlet_Sales vs Outlet_Type(dependent)
+					Avg Sales lowest in Grocery store, highest in SMT-3(no OUT027)
+			28. Item_Outlet_Sales vs Outlet_Est_Year: No significant relationship
+			29. Item_Outlet_Sales vs Item_Fat_Content(independent)
+				1. Avg Sales high for regular items than low fat items
+				2. Low fat most sold than regular
+			30. Item_Outlet_Sales vs Outlet_Size: (OSize: missing value, ignore for now)(dependent with MV)
+			31. Item_Outlet_Sales vs Outlet_Location_Type(dependent)
+				1. Average sales lowest in tier-1
+				2. Total sales highest in tier-3 and lowest in tier-1
+				
+				
+			Item_Weight~ Item_Type, Item_Fat_Content,Item-Identifier (dependents), Item_MRP(cont)	
+			Item_Visibility~ Item_Type, Outler_Identifier, Outlet_Type, Outlet_Est_Year, Item_Fat_Content, Outlet_Location_Type, Outlet_Size(with and (without missing on both) )
+								Item_Outlet_Sales(cont)
+			Item_MRP~ Item_Type, Item_Identifer, Item_Weight(cont),Item_Outlet_Sales(cont)	
+			Item_Outlet_Sales~ Item_Type,Outler_Identifier,Outlet_Type,Outlet_size(with MV),Outlet_Location_Type,Item_Identifer,Item_Visibility(cont)
+								Item_MRP(cont), Outlet_Size(without missing)
+
+3. Data Preparation
+	1. There are around 526 observations which have Item_Visibility=0. Since it is not possible, I am turning them into missing values. 
+	2. Imputing missing values
+		1. Item_Weight - 4 missing values are there. Imputing them with mean
+		2. Outlet_Size - 2410 missing values
+			1. Outliers treatment
+				We have 2 outliers Item_Outlet_Sales and Item_Visibility
+					1. Item_Visibility
+						Took cube root, removed remaining 3 outliers as missing values
+						Now Item_Visibility has 529 missing values
+					2. Item_Outlet_Sales
+						Took cube root, removed remaining 3 outliers and imputed with mean. 
+						
+			2. Bivariate Analysis
+				To look for how the above data transformation affects Outlet_size
+				Categorical - Categorical
+					No cat variable has a significant relationship with outlet_size
+				Continuous-Categorical
+					Since only two cat variables were changed, only the cat-cont relationship of those 2 variables will be reviewed
+						1. Item_Visibility vs Outlet_size (dependent)
+						2. Item_Outlet_Sales vs Outlet_size(dependent)
+					
+			3. Missing Value imputation 
+				The missing values in outlet Size cannot be imputed by mean of Item_Outlet_Sales. Because, the Outlets with one size does not have similar outlet
+					size of its outlet size's group mean.
+				
+		1. Outlet Size: 2410 missing values, missing for Outlet10, 45, 17
+			vs Item_Outlet_Sales:
+				High:12.49	Medium:13.13, Small:11.33| O10:6.55, O45:12.35, O17:12.62
+				
+			vs Item_Visibility:
+				High:0.3788 Medium:0.3796 Small:0.3981| O10:0.4507 O45:0.3795 O17:0.3822
+				
+			Item_Outlet_Sales is more significantly related than Item_Visibility(which also has missing values). We will go by Item_Outlet_Sales.
+			
+			Imputing: O10: Small
+					  O17: High
+					  O45: High
+					  
+		2. Item_Weight: Imputed with mean.
+					  
+		2. Item_Visibility: 529 missing values (6.29% of total no of observations). It is a continuous variable.
+			Imputation by Linear Regression
+				1. Partitioned the dataset into train(0.70), validation(0.30), test
+				2. Checking for Linear Regression Assumptions in train dataset
+					1. Multi collinearity
+						(Item_Visibility, Item_Outlet_Sales( -0.13)) and (Item_MRP, Item_Outlet_Sales(0.5))
+						THERE SEEMS TO BE LOT OF OUTLIERS IN TRAIN SET. SO WE WILL AGAIN EXPLORE THE DATA FOR TRAIN SET ALONE
+					
+					DATA EXPLORATION FOR TRAIN SET
+						Item_Visibility and Item_Outlet_Sales in train dataset has lot of outliers
+						
+			
+		
+			
+				
+				
+			
+			
+				
+				
+				 
+				
+			
+				
+			
+				
