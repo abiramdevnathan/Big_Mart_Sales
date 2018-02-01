@@ -207,12 +207,24 @@
 					No cat variable has a significant relationship with outlet_size
 				Continuous-Categorical
 					Since only two cat variables were changed, only the cat-cont relationship of those 2 variables will be reviewed
-						1. Item_Visibility vs Outlet_size (dependent)
+						1. Item_Visibility vs Outlet_size dependent (Item_Visibility has 526 missing values. This variable will be removed. No use in seeing the relationship.
 						2. Item_Outlet_Sales vs Outlet_size(dependent)
 					
 			3. Missing Value imputation 
 				The missing values in outlet Size cannot be imputed by mean of Item_Outlet_Sales. Because, the Outlets with one size does not have similar outlet
 					size of its outlet size's group mean.
+				KNN Imputation
+					1. Item_Visibility is removed as it has 526 missing values. Item-Identifier also removed(unique variables)
+					2. Converted all factor variables into numeric variables - For KNN either it should be fully numeric, or fully categorical
+					3. Dataset divided into three parts (train, test, validation)
+						1. First divided into missing part and non missing part(test set)
+						2. The non missing part is further sampled into training set(70% of non missing part) and validation set(30%)
+					4. The class labels of train set and validation set are extracted and then the target variable is removed in both the sets
+					5. All the three datasets(train, validation, test) all have numeric variables in them. They are normalized.
+					6. The train dataset is trained with KNN model and tested in validation with k=26. The accuracy is 0.9983%
+					7. The same train set with same k is used in test dataset. The missing values are imputed.
+						
+				
 				
 		1. Outlet Size: 2410 missing values, missing for Outlet10, 45, 17
 			vs Item_Outlet_Sales:
