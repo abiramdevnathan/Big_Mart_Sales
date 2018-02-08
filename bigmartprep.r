@@ -1,8 +1,21 @@
 getwd()
 setwd("D:\\Media\\Documents\\Data Science\\Repositories\\Big mart sales")
 
-library(mlr)
-library(caret)
+library(mlr)#For SummarizeColumns function
+library(caret)#For Confusuion Matrix
+library(class)#For KNN
+library(car)#for Linear regression
+library(dummies)#for creating dummy variables
+library(MASS)#For box cox transformation
+library(rpart)
+library(rpart.plot)
+library(rattle)
+library(RColorBrewer)
+library(randomForest)
+library()
+
+
+
 
 big<-read.csv("Train.csv", header = TRUE, na.strings = c("","NA","-","NaN"))#<---
 bigm<-big#<---
@@ -141,8 +154,7 @@ bigmo_vali<-as.data.frame(lapply(bigmo_vali,normalize))#<---
 bigmo_test<-as.data.frame(lapply(bigmo_test,normalize))#<---
 
 #MV_(Outlet_Size)_KNN
-library(class)
-library(caret)
+
 vali_pred_bigmo<-knn(bigmo_train,bigmo_vali,cl=bigmo_train_class,k=26)
 confusionMatrix(vali_pred_bigmo,bigmo_vali_class)
 test_pred_bigmo<-knn(bigmo_train,bigmo_test,cl=bigmo_train_class,k=26)#<---
@@ -151,4 +163,102 @@ bigm$Outlet_Size[which(is.na(bigm$Outlet_Size))]<-test_pred_bigmo#<---
 #MV_(Outlet_Size)_KNN_(Imputation_check and changes)
 table(bigm$Outlet_Identifier,bigm$Outlet_Size)
 
+summarizeColumns(bigm)
 
+#MV_(Item_Visibility)
+#MV_(Item_Visibility)_Outlier
+bigmv<-bigm[,-1]#<---
+
+boxplot(bigmv$Item_Weight)
+boxplot(bigmv$Item_Visibility)
+boxplot(bigmv$Item_MRP)
+boxplot(bigmv$Item_Outlet_Sales)
+
+#MV_(Item_Visibility)_Outlier_(Item_Visibility)
+boxplot((bigmv$Item_Visibility)^(1/3))
+bigmv$Item_Visibility<-(bigmv$Item_Visibility)^(1/3)#<---
+quantile(bigmo$Item_Visibility,0.75,na.rm = TRUE)+(1.5*IQR(bigmo$Item_Visibility,na.rm = T))
+bigmv$Item_Visibility[which(bigmv$Item_Visibility>0.6797936)]<-NA#<---
+length(bigmv$Item_Visibility[which(is.na(bigmv$Item_Visibility))])
+
+#MV_(Item_Visibility)_Outlier_(Item_Outlet_Sales)
+boxplot((bigmv$Item_Outlet_Sales)^(1/3))
+bigmv$Item_Outlet_Sales<-(bigmv$Item_Outlet_Sales)^(1/3)#<---
+IQR(bigmv$Item_Outlet_Sales)*1.5+quantile(bigmv$Item_Outlet_Sales,0.75)
+bigmv$Item_Outlet_Sales[which(bigmv$Item_Outlet_Sales>22.33688)]<-NA#<---
+length(bigmv$Item_Outlet_Sales[which(is.na(bigmv$Item_Outlet_Sales))])
+mean(bigmv$Item_Outlet_Sales,na.rm = T)
+bigmv$Item_Outlet_Sales[which(is.na(bigmv$Item_Outlet_Sales))]<-11.98796#<---
+length(bigmv$Item_Outlet_Sales[which(is.na(bigmv$Item_Outlet_Sales))])
+
+#MV_(Item_Visibility)_BA
+#MV_(Item_Visibility)_BA(Cont-cont)
+#MV_(Item_Visibility)_BA(Cont-cont)_(Item_Visibility vs Item_Outlet_Sales)
+cor.test(bigmv$Item_Visibility,bigmv$Item_Outlet_Sales)
+#MV_(Item_Visibility)_BA(Cont-cat)_(Item_Visibility vs Item_Outlet_Sales)
+f<-aov(Item_Visibility~Item_Type,data = bigmv)
+summary(f)
+f<-aov(Item_Visibility~Outlet_Identifier,data = bigmv)
+summary(f)
+f<-aov(Item_Visibility~Outlet_Type,data = bigmv)
+summary(f)
+f<-aov(Item_Visibility~Outlet_Establishment_Year,data = bigmv)
+summary(f)
+f<-aov(Item_Visibility~Item_Fat_Content,data = bigmv)
+summary(f)
+f<-aov(Item_Visibility~Outlet_Size,data = bigmv)
+summary(f)
+f<-aov(Item_Visibility~Outlet_Location_Type,data = bigmv)
+summary(f)
+
+
+str(bigmv)
+
+#MV_(Item_Visibility)_(preparing the dataset converting all variables into numeric for ML imputation)
+bigmv_dummy<-dummy.data.frame(bigmv[,c(-1,-3,-5,-11,-2,-8,-9)])#<---
+bigmv_dummy<-as.data.frame(lapply(bigmv_dummy,FUN = as.numeric))#<---
+bigmv_dummy<-cbind(bigmv[,c(1,3,5,11,2,8,9)],bigmv_dummy)#<---
+for(i in 5:7){#<---
+  bigmv_dummy[,i]<-as.character(bigmv_dummy[,i])
+}
+bigmv_dummy$Item_Fat_Content<-ifelse(bigmv$Item_Fat_Content=="Regular",1,0)#<---
+bigmv_dummy$Outlet_Size[which(bigmv_dummy$Outlet_Size=="High")]<-2#<---
+bigmv_dummy$Outlet_Size[which(bigmv_dummy$Outlet_Size=="Medium")]<-1#<---
+bigmv_dummy$Outlet_Size[which(bigmv_dummy$Outlet_Size=="Small")]<-0#<---
+bigmv_dummy$Outlet_Location_Type[which(bigmv_dummy$Outlet_Location_Type=="Tier 1")]<-2#<---
+bigmv_dummy$Outlet_Location_Type[which(bigmv_dummy$Outlet_Location_Type=="Tier 2")]<-1#<---
+bigmv_dummy$Outlet_Location_Type[which(bigmv_dummy$Outlet_Location_Type=="Tier 3")]<-0#<---
+bigmv_dummy[,6]<-as.numeric(bigmv_dummy[,6])#<---
+bigmv_dummy[,7]<-as.numeric(bigmv_dummy[,7])#<---
+bigmv_pprocess<-preProcess(bigmv_dummy,method = "range")#<---
+bigmv_dummy<-predict(bigmv_pprocess,bigmv_dummy)#<---
+
+#MV_(Item_Visibility)_(preparing the dataset converting all variables into numeric for ML imputation)_Sampling
+bigmv_nomissing<-bigmv_dummy[-which(is.na(bigmv_dummy$Item_Visibility)),]#<---
+bigmv_test<-bigmv_dummy[which(is.na(bigmv_dummy$Item_Visibility)),]#<---
+bigmv_test<-bigmv_test[,-2]#<---
+set.seed(111)#<---
+index_bigmv<-sample(1:nrow(bigmv_nomissing),0.70*nrow(bigmv_nomissing),replace = F)#<---
+bigmv_train<-bigmv_nomissing[index_bigmv,]#<---
+bigmv_vali<-bigmv_nomissing[-index_bigmv,]#<---
+
+
+#MV_(Item_Visibility)_KNN modeling_train
+bigmv_trainControl <- trainControl(method="repeatedcv", number=10, repeats=3)#<---
+bigmv_metric <- "RMSE"#<---
+set.seed(7)#<---
+mvfit<- train(Item_Visibility~., data=bigmv_train,method="knn", metric=bigmv_metric,trControl=bigmv_trainControl)#<---
+print(mvfit)
+
+#MV_(Item_Visibility)_KNN modeling_validating
+bigmv_target_vali<-bigmv_vali[,2]
+bigmv_target_pred_vali<-predict(mvfit,bigmv_vali[,-2],k=9)
+bigmv_vali_RMSE<-RMSE(bigmv_target_pred_vali,bigmv_target_vali)
+
+#MV_(Item_Visibility)_KNN_Validation
+bigmv_pred_test<-predict(mvfit,bigmv_test,k=9)#<---
+bigmv$Item_Visibility[which(is.na(bigmv$Item_Visibility))]<-bigmv_pred_test#<---
+bigmv$Item_Visibility<-(bigmv$Item_Visibility)^3#<---
+bigm$Item_Visibility<-bigmv$Item_Visibility#<---
+
+summarizeColumns(bigm)

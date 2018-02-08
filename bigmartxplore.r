@@ -143,13 +143,14 @@ plot(bigm$Item_Type,bigm$Item_Weight)
 abline(h=mean(bigm$Item_Weight,na.rm = T),lwd=2,col="black")
 
 #Filling the unnecessary missing values for Item_Weight
-array_Item_Identifier<-bigm$Item_Identifier#<---
+array_Item_Identifier<-bigm$Item_Identifier[which(is.na(bigm$Item_Weight))]#<---
 i=1#<---
 for (i in 1:length(array_Item_Identifier)) {#<---
   item_weight_val<-bigm$Item_Weight[which(bigm$Item_Identifier==array_Item_Identifier[i])]
   avg_item<-mean(item_weight_val,na.rm = T)
-  bigm$Item_Weight[which(is.na(bigm$Item_Weight)&bigm$Item_Identifier==array_Item_Identifier[i])]<-avg_item
+  bigm$Item_Weight[bigm$Item_Identifier==array_Item_Identifier[i]]<-avg_item
 }
+
 tapply(bigm$Item_Weight,bigm$Item_Type,mean,na.rm=T)
 f<-aov(Item_Weight~Item_Type,data = bigm)
 summary(f)
@@ -232,9 +233,3 @@ f<-aov(Item_MRP~Outlet_Size,data=bigm)
 summary(f)
 f<-aov(Item_Outlet_Sales~Outlet_Size,data=bigm)
 summary(f)
-
-
-
-
-
-

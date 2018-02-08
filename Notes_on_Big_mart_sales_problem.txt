@@ -223,47 +223,36 @@
 					5. All the three datasets(train, validation, test) all have numeric variables in them. They are normalized.
 					6. The train dataset is trained with KNN model and tested in validation with k=26. The accuracy is 0.9983%
 					7. The same train set with same k is used in test dataset. The missing values are imputed.
-						
-				
-				
-		1. Outlet Size: 2410 missing values, missing for Outlet10, 45, 17
-			vs Item_Outlet_Sales:
-				High:12.49	Medium:13.13, Small:11.33| O10:6.55, O45:12.35, O17:12.62
-				
-			vs Item_Visibility:
-				High:0.3788 Medium:0.3796 Small:0.3981| O10:0.4507 O45:0.3795 O17:0.3822
-				
-			Item_Outlet_Sales is more significantly related than Item_Visibility(which also has missing values). We will go by Item_Outlet_Sales.
-			
-			Imputing: O10: Small
-					  O17: High
-					  O45: High
-					  
-		2. Item_Weight: Imputed with mean.
-					  
-		2. Item_Visibility: 529 missing values (6.29% of total no of observations). It is a continuous variable.
-			Imputation by Linear Regression
-				1. Partitioned the dataset into train(0.70), validation(0.30), test
-				2. Checking for Linear Regression Assumptions in train dataset
-					1. Multi collinearity
-						(Item_Visibility, Item_Outlet_Sales( -0.13)) and (Item_MRP, Item_Outlet_Sales(0.5))
-						THERE SEEMS TO BE LOT OF OUTLIERS IN TRAIN SET. SO WE WILL AGAIN EXPLORE THE DATA FOR TRAIN SET ALONE
 					
-					DATA EXPLORATION FOR TRAIN SET
-						Item_Visibility and Item_Outlet_Sales in train dataset has lot of outliers
+		3. Item_Visibility - 526 missing values
+			1. Outliers Treatment
+				Again we have the same 2 outliers - Item_Visibility and Item_Outlet_Sales
+					1. Item_Visibility
+						Took cube root, removed remaining 3 outliers as missing values
+						Now Item_Visibility has 529 missing values. This will be predicted now.
+					2. Item_Outlet_Sales
+						Took cube root, removed remaining 3 outliers and imputed with mean. 
 						
-			
-		
-			
-				
-				
-			
-			
-				
-				
-				 
-				
-			
-				
-			
-				
+			2. Bivariate Analysis
+				To look how data transformation of Item_Visibility and Item_Outlet_Sales affects Item_Visibility(the target variable)
+				Continuous-Continuous
+					Item_Visibility - Item_Outlet_Sales
+						They have a very significant relationship. Negatively correlated with correlation coefficient: -0.1552268.
+				Categorical-Categorical
+					No changes
+				Continuous-Categorical
+					No changes in relationship. The Item_Visibility is dependent with all categorical variables.
+					
+			3. KNN Imputation
+				Linear regression was tried. But the despite all possible basic transformations(except box cox) the residuals did not turn out to be normal. 
+				Therefore I am going to try KNN
+					1. Transformed all variables into numerical
+					2. Normalized all the variables
+					3. Data split into train, validation and split.
+					3. Train dataset is trained using KNN and then cross validated with repeat 3 times
+					4. The RMSE over train set 0.1894 with best k(neighbors)=9
+					5. The RMSE over validation set 0.1892 with k=9. The RMSE over train set is very close to RMSe over test set. Hence, the model is not 
+						over fitted or biased
+					6. Applied the same model to test set. 
+					7. Cubed the predicted values to neutralize the initial cubic transformation. 
+					8. Copied the variable values to the main set.
