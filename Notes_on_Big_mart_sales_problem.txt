@@ -81,7 +81,7 @@
 			8. Item_Type - Outlet_Identifier: (Independent)
 			9. Item_Type - Outlet_Type: (Independent)
 			10.Item_Type - Outlet_Est_Year: (Independent)
-			11.Item_Type - Item_Fat_Content: (Dependent):Fat content is low in Household, Snack,fruits and vegetables, Health&hygiene,dairy products
+			11.Item_Type - Item_Fat_Content: (Dependent):Fat content is low in Household, fruits and vegetables, Health&hygiene,dairy products
 															Fat content is regular in Snack Foods,Frozen foods,Baking goods.
 			12.Item_Type - Outlet_Size(Independent)
 			13.Item_Type - Outlet_Location_Type: (Independent)
@@ -109,6 +109,9 @@
 				
 			
 			28.Unique(Outlet Size vs Outlet_Location_Type):(independent)
+			
+			
+			
 			
 		2.2.3 Continuous-Categorical
 			1. Item_weight vs Item_Identifer: 2.1.1.1
@@ -171,7 +174,7 @@
 				2. Sales highest in SMT-1 lowest in Grocery
 			27. Item_Outlet_Sales vs Outlet_Type(dependent)
 					Avg Sales lowest in Grocery store, highest in SMT-3(no OUT027)
-			28. Item_Outlet_Sales vs Outlet_Est_Year: No significant relationship
+			28. Item_Outlet_Sales vs Outlet_Est_Year: No significant relationship <-
 			29. Item_Outlet_Sales vs Item_Fat_Content(independent)
 				1. Avg Sales high for regular items than low fat items
 				2. Low fat most sold than regular
@@ -256,3 +259,60 @@
 					6. Applied the same model to test set. 
 					7. Cubed the predicted values to neutralize the initial cubic transformation. 
 					8. Copied the variable values to the main set.
+					
+	3. Final preparation for modeling (without missing values)
+		1. Data Exploration
+			1. Univariate analysis
+				1. Continuous variables
+					Item_Visibility and Item_Outlet_Sales - Have too many data points above the whisker. Cannot reject them as outliers. 
+					Item_Weight and Item_MRP - Multi modal
+					Item_Weight and Item_Outlet_Sales are positively skewed. (unimodal)
+					
+				2. Cat Variables - No changes
+			
+			2. Bivariate analysis	
+				1. Continuous-Continuous
+					There is a correlation - Item_Outlet_Sales, Item_Visibility
+					There is a correlation  - Item_MRP, Item_Outlet_Sales
+					
+				2. Categorical-Categorical
+					1. The outlet Size had missing values which were imputed. Now relationship of outlet size with other variables will be explored.
+						Outlet_Size vs Item_Type(independent)
+						Outlet_Size vs Outlet_Type(independent)
+						Outlet_Size vs Item_Fat_Content(independent)
+						
+					2. To check for the one dependent relation that existed
+						Item_Type vs Item_Fat_Content(It stays the same)
+					
+				3. Continuous-Categorical
+						To check for Item_Visibility vs all (dependent with all cat variables)
+									Item_Outlet_Sales vs all (dep with Out_Est_year, Outlet_Size)
+									Outlet_Size vs Item_Weight and Item_MRP (only on Out_Est_year, Item_Visibility)
+			
+			3. Outliers Treatment
+				Transforming Item_Visibility and Item_Outlet_Sales as they are outliers
+				
+		2. Model Evaluation
+			1. This is a regression problem - List of models that can be used are
+				1. Linear
+					1. Linear regression (lm)
+					2. Generalized Linear Reg (glm)
+					3. Penalized Linear reg (glmnet)
+				
+				2. Non linear
+					1. Decision Trees (cart)
+					2. KNN (knn)
+					3. SVM (with linear basis) (svm)
+					
+				3. Ensembling Technique
+					1. Random forest with bagging (rf)
+					2. Gradient Boosting Machines (gbm)
+					3. Cubist, Boosting (cubist)
+					
+					
+					
+					
+					
+						
+			
+		

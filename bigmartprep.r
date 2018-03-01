@@ -12,10 +12,8 @@ library(rpart.plot)
 library(rattle)
 library(RColorBrewer)
 library(randomForest)
-library()
-
-
-
+library(corrplot)
+library(ggplot2)
 
 big<-read.csv("Train.csv", header = TRUE, na.strings = c("","NA","-","NaN"))#<---
 bigm<-big#<---
@@ -62,7 +60,6 @@ bigmo$Item_Outlet_Sales[which(bigmo$Item_Outlet_Sales>22.33688)]<-NA#<---
 length(bigmo$Item_Outlet_Sales[which(is.na(bigmo$Item_Outlet_Sales))])
 mean(bigmo$Item_Outlet_Sales,na.rm = T)
 bigmo$Item_Outlet_Sales[which(is.na(bigmo$Item_Outlet_Sales))]<-11.98796#<---
-
 
 #MV_(Outlet size)_BA
 #MV_(Outlet size)_BA_(Cont-Cat)
@@ -262,3 +259,74 @@ bigmv$Item_Visibility<-(bigmv$Item_Visibility)^3#<---
 bigm$Item_Visibility<-bigmv$Item_Visibility#<---
 
 summarizeColumns(bigm)
+
+library(mlr)
+
+summarizeColumns(bigm)
+
+
+#Data Exploration for all variables for modeling
+#Model_UV Analysis
+#Model_UV Analysis_ContinuousV
+#Model_UV Analysis_ContinuousV_Histogram
+par(mfrow=c(2,2))
+for (i in c(2,4,6,12)) {
+  hist(bigm[,i],main = names(bigm)[i])
+}
+
+#Model_UV Analysis_ContinuousV_Density plot
+par(mfrow=c(2,2))
+for (i in c(2,4,6,12)) {
+  plot(density(bigm[,i]),main = names(bigm)[i])
+}
+
+#Model_UV Analysis_ContinuousV_Boxplot
+for (i in c(2,4,6,12)) {
+  boxplot(bigm[,i],main = names(bigm)[i])
+}
+
+Item_Visibility<-bigm[order(-bigm$Item_Visibility),4]
+Item_Outlet_Sales<-bigm[order(-bigm$Item_Outlet_Sales),12]
+head(Item_Visibility, 100)
+head(Item_Outlet_Sales, 100)
+
+#Model_UV Analysis_CategoricalV_
+
+par(mfrow=c(3,3))
+for (i in c(3,5,7,8,9,10,11)) {
+  barplot(table(bigm[,i]),main = names(bigm)[i],col = bigm[,i])
+}
+dev.off()
+
+for (i in c(3,5,7,8,9,10,11)) {
+print(cbind(freq=table(bigm[,i]),prob=prop.table(table(bigm[,i]))*100))
+}
+
+#Model_BV_Cont-cont
+bigm_corr<-cor(bigm[,c(2,4,6,12)])
+corrplot(bigm_corr,method = "circle")
+cor.test(bigm$Item_Weight,bigm$Item_Visibility)
+cor.test(bigm$Item_Weight,bigm$Item_MRP)
+cor.test(bigm$Item_Weight,bigm$Item_Weight)
+cor.test(bigm$Item_Visibility,bigm$Item_MRP)
+cor.test(bigm$Item_Visibility,bigm$Item_Outlet_Sales)
+cor.test(bigm$Item_MRP,bigm$Item_Outlet_Sales)
+pairs(bigm[,c(2,4,6,12)])
+pairs(bigm[,c(2,4,6,12)], col=bigm$Outlet_Location_Type)
+
+#Model_BV_(Cat-cat)
+chisq.test(bigm$Outlet_Size,bigm$Item_Type)
+chisq.test(bigm$Outlet_Size,bigm$Item_Fat_Content)
+outlet_unique<-unique(bigm[,c(9,11,7)])
+chisq.test(outlet_unique$Outlet_Size,outlet_unique$Outlet_Type)
+chisq.test(bigm$Item_Type,bigm$Item_Fat_Content)
+
+#Model_Outliers treatment
+bigm$Item_Visibility<-(bigm$Item_Visibility)^(1/3)#<---
+bigm$Item_Visibility[which(bigm$Item_Visibility>0.6797936)]<-NA#<---
+mean(bigm$Item_Visibility,na.rm = T)
+bigm$Item_Visibility[which(is.na(bigm$Item_Visibility))]<-0.3932236#<---
+
+bigm$Item_Outlet_Sales<-(bigm$Item_Outlet_Sales)^(1/3)#<---
+bigm$Item_Outlet_Sales[which(bigm$Item_Outlet_Sales>22.33688)]<-NA#<---
+bigm$Item_Outlet_Sales[which(is.na(bigm$Item_Outlet_Sales))]<-11.98796#<---
